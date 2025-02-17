@@ -4,15 +4,15 @@
 
 <div class="text-center">
     <h1 class="display-4 custom-heading">Lunch timer</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    @* <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p> *@
     <div>
-        <strong>Current Time: </strong><span id="currentTime"></span>
+        <strong>Current Time: </strong> <span id="currentTime"></span>
     </div>
     <div>
-        <span>Countdown to Noon Today: </span><span id="dailyCountdown"></span>
+        <span>Countdown to lunch today: </span><span id="dailyCountdown"></span>
     </div>
     <div>
-        <span>Countdown to Noon Tomorrow: </span><span id="tomorrowCountdown"></span>
+        <span>Countdown to lunch tomorrow: </span><span id="tomorrowCountdown"></span>
     </div>
     <div>
         <span>Countdown to Friday 3 PM: </span><span id="fridayCountdown"></span>
@@ -23,18 +23,31 @@
     .custom-heading {
         font-weight: bold;
         color: #007bff; /* Change color to blue */
-        text-shadow: 2px 2px 4px #000000; /* Add a shadow for emphasis */
+        text-shadow: 2px 2px 5px #000000; /* Add a shadow for emphasis */
     }
 </style>
 
 <script>
+    function getDate() {
+        var date = new Date()
+        return date
+    }
+
+
     function getNextTargetTime(hour, minute) {
         var now = new Date();
         var target = new Date();
         target.setHours(hour, minute, 0, 0);
-        if (now > target) {
+        if (now < target) {
             target.setDate(target.getDate() + 1);
+            target.setHours(hour, minute, 0, 0);
         }
+        else if (now > target) {
+            target.setDate(target.getDate() + 1);
+            target.setHours(-11, 1, 1, 0);
+        }
+
+        
         return target;
     }
 
@@ -93,6 +106,7 @@
         updateCountdown(getNextTargetTime(12, 0), 'dailyCountdown');
         updateCountdown(getTomorrowNoon(), 'tomorrowCountdown');
         updateCountdown(getFridayThreePM(), 'fridayCountdown');
+        
     }
 
     setInterval(updateAll, 1000);
