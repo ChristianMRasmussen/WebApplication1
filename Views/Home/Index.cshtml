@@ -1,0 +1,100 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4 custom-heading">Lunch timer</h1>
+    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <div>
+        <strong>Current Time: </strong><span id="currentTime"></span>
+    </div>
+    <div>
+        <span>Countdown to Noon Today: </span><span id="dailyCountdown"></span>
+    </div>
+    <div>
+        <span>Countdown to Noon Tomorrow: </span><span id="tomorrowCountdown"></span>
+    </div>
+    <div>
+        <span>Countdown to Friday 3 PM: </span><span id="fridayCountdown"></span>
+    </div>
+</div>
+
+<style>
+    .custom-heading {
+        font-weight: bold;
+        color: #007bff; /* Change color to blue */
+        text-shadow: 2px 2px 4px #000000; /* Add a shadow for emphasis */
+    }
+</style>
+
+<script>
+    function getNextTargetTime(hour, minute) {
+        var now = new Date();
+        var target = new Date();
+        target.setHours(hour, minute, 0, 0);
+        if (now > target) {
+            target.setDate(target.getDate() + 1);
+        }
+        return target;
+    }
+
+    function getTomorrowNoon() {
+        var now = new Date();
+        var tomorrowNoon = new Date();
+        tomorrowNoon.setDate(now.getDate() + 1);
+        tomorrowNoon.setHours(12, 0, 0, 0);
+        return tomorrowNoon;
+    }
+
+    function getFridayThreePM() {
+        var now = new Date();
+        var fridayThreePM = new Date(now);
+        var day = now.getDay();
+        var daysUntilFriday = (5 - day + 7) % 7;
+        if (daysUntilFriday === 0 && now.getHours() >= 15) {
+            daysUntilFriday = 7;
+        }
+        fridayThreePM.setDate(now.getDate() + daysUntilFriday);
+        fridayThreePM.setHours(15, 0, 0, 0);
+        return fridayThreePM;
+    }
+
+    function updateClock() {
+        var now = new Date();
+        var hours = now.getHours();
+        var minutes = now.getMinutes();
+        var seconds = now.getSeconds();
+        var timeString = hours.toString().padStart(2, '0') + ':' +
+                         minutes.toString().padStart(2, '0') + ':' +
+                         seconds.toString().padStart(2, '0');
+        document.getElementById('currentTime').textContent = timeString;
+    }
+
+    function updateCountdown(target, elementId) {
+        var now = new Date();
+        var distance = target - now;
+
+        var totalHours = Math.floor(distance / (1000 * 60 * 60));
+        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        if (elementId === 'tomorrowCountdown' && totalHours === 0) {
+            totalHours = 24;
+        }
+
+        var timeString = totalHours.toString().padStart(2, '0') + ':' +
+                         minutes.toString().padStart(2, '0') + ':' +
+                         seconds.toString().padStart(2, '0');
+        document.getElementById(elementId).textContent = timeString;
+    }
+
+    function updateAll() {
+        updateClock();
+        updateCountdown(getNextTargetTime(12, 0), 'dailyCountdown');
+        updateCountdown(getTomorrowNoon(), 'tomorrowCountdown');
+        updateCountdown(getFridayThreePM(), 'fridayCountdown');
+    }
+
+    setInterval(updateAll, 1000);
+    updateAll(); // initial call to display clock and countdowns immediately
+</script>
